@@ -6,13 +6,14 @@ url = ""
 #r = rq.get(url)
 
 def define_user():
-    pass
+    username = input("enter username")
+    return(username)
 
 def define_password():
     password = input("enter password:")
     return(password)
 
-username = "alexander.powers@freseniusmedicalcare.com"
+username = define_user()
 
 # If using cert auth, replace cert.pem with your pem converted certificate
 # filename. Otherwise, remove this line.
