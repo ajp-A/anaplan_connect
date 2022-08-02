@@ -6,7 +6,7 @@ url = ""
 #r = rq.get(url)
 
 def define_user():
-    username = input("enter username")
+    username = input("enter username:")
     return(username)
 
 def define_password():
