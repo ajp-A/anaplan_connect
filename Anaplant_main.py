@@ -1,9 +1,12 @@
 import requests
-import base64
+from base64 import b64encode
+import json
+import pandas as pd
 
 
-url = ""
+token_url = "https://auth.anaplan.com/token/authenticate"
 #r = rq.get(url)
+
 
 def define_user():
     username = input("enter username:")
@@ -14,34 +17,42 @@ def define_password():
     return(password)
 
 def get_token():
-    requests.post("https://auth.anaplan.com/token/authenticate")
-    pass
+    r = requests.post(token_url, 
+    auth=(username , password))
+    return r.status_code
 
-
+def auth_token_basic(username, password):
+    user_credentials= b64encode(b'email:password').decode() 
+    auth_headers = {} 
+    auth_headers['Authorization'] = 'Basic ' + user_credentials
+    auth_url = 'https://auth.anaplan.com/token/authenticate'
+    auth_json = requests.post(auth_url, headers=auth_headers).json()
+    try:
+        auth_token = auth_json['tokenInfo']['tokenValue']
+        return auth_token
+    except KeyError:
+        print('No Token Info found - check your credentials?')
 
 
 username = "alexander.powers@freseniusmedicalcare.com" #define_user()
-
-# If using cert auth, replace cert.pem with your pem converted certificate
-# filename. Otherwise, remove this line.
-#cert = open('cert.pem').read()
-
-# If using basic auth, insert your password. Otherwise, remove this line.
 password = define_password()
+token = auth_token_basic(username, password)
+print(token)
 
-# Uncomment your authentication method (cert or basic). Remove the other.
+mdl_id = ""
+lineitem_url = 'https://api.anaplan.com/2/0/models/{}/lineItems/'.format(mdl_id) 
 
-#user = 'AnaplanCertificate ' + str(base64.b64encode((
-#f'{username}:{cert}').encode('utf-8')).decode('utf-8'))
 
-user = 'Basic ' + str(base64.b64encode((f'{username}:{password}').encode('utf-8')).decode('utf-8'))
+
+
+#user = 'Basic ' + str(base64.b64encode((f'{username}:{password}').encode('utf-8')).decode('utf-8'))
 
 
 getHeaders = {
-    'Authorization': user
+    'Authorization': token
 }
 
-getWorkspaces = requests.get('https://api.anaplan.com/1/3/workspaces', headers=getHeaders)
+getWorkspaces = requests.get('https://api.anaplan.com/1/3/workspaces', headers=token)
 
 with open('workspaces.json', 'wb') as f:
     f.write(getWorkspaces.text.encode('utf-8'))
