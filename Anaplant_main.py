@@ -34,7 +34,7 @@ def auth_token_basic(username, password):
         print('No Token Info found - check your credentials?')
 
 
-username = "alexander.powers@freseniusmedicalcare.com" #define_user()
+username = define_user()
 password = define_password()
 token = auth_token_basic(username, password)
 print(token)
